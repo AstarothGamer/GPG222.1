@@ -81,7 +81,6 @@ public class Client : MonoBehaviour
 
             if (incomingData.Length - startPos < 4 + length)
             {
-                // Not enough data yet
                 break;
             }
 
@@ -137,7 +136,6 @@ public class Client : MonoBehaviour
         }
         else if (packet is FoodSpawnPacket spawn)
         {
-            Debug.Log($"🍏 Food spawn packet received: ID {spawn.foodId} at {spawn.position}");
             if (foodById.ContainsKey(spawn.foodId))
             {
                 var fsp = foodById[spawn.foodId];

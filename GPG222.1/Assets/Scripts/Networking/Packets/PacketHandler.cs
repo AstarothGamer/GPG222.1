@@ -18,7 +18,7 @@ public static class PacketHandler
     {
         if (length < 4)
         {
-            Debug.LogError("❌ Failed to decode packet: Not enough data to read packet type");
+            Debug.LogError("Failed to decode packet: Not enough data to read packet type");
             return null;
         }
 
@@ -38,7 +38,7 @@ public static class PacketHandler
         }
         catch (EndOfStreamException e)
         {
-            Debug.LogError($"❌ Failed to decode packet: {e.Message}");
+            Debug.LogError($"Failed to decode packet: {e.Message}");
             return null;
         }
     }

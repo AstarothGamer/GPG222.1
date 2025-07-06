@@ -48,7 +48,7 @@ public class Server : MonoBehaviour
             Socket newClient = server.Accept();
             newClient.Blocking = false;
             clients.Add(newClient);
-            Debug.Log("👤 New client connected");
+            Debug.Log("New client connected");
 
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream);
@@ -120,7 +120,7 @@ public class Server : MonoBehaviour
 
         foreach (Socket d in disconnected)
         {
-            Debug.Log("❌ Client disconnected");
+            Debug.Log("Client disconnected");
             d.Close();
             clients.Remove(d);
         }
