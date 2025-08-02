@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
         playerID = pd.playerID;
         playerName = pd.playerName;
         rb = GetComponent<Rigidbody>();
+        
+        GetComponent<Renderer>().material.color = pd.playerColor;
     }
 
     void Update()
@@ -35,4 +37,5 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+    
 }

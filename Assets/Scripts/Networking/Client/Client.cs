@@ -20,6 +20,7 @@ public class Client : MonoBehaviour
 
     public int serverPort = 4000;
     private string ipAddress;
+    private Color color;
     public PlayerController player;
     public PlayerData pd;
 
@@ -65,7 +66,7 @@ public class Client : MonoBehaviour
 
         if (client != null && client.Connected && player != null)
         {
-            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform));
+            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform, pd.playerColor));
         }
     }
 
@@ -130,6 +131,7 @@ public class Client : MonoBehaviour
                 }
 
                 var remotePlayer = otherPlayers[pos.playerName];
+                remotePlayer.SetColor(new Color(pos.colorR, pos.colorG, pos.colorB, pos.colorA));
                 remotePlayer.SetPosition(pos.position);
                 remotePlayer.SetScale(pos.scale);
             }
@@ -153,10 +155,11 @@ public class Client : MonoBehaviour
         }
     }
 
-    public void ConnectToServer(string ip, string playerName)
+    public void ConnectToServer(string ip, string playerName, Color color)
     {
         this.name = playerName;
         this.ipAddress = ip;
+        this.color = color;
 
         try
         {
@@ -166,7 +169,8 @@ public class Client : MonoBehaviour
 
             pd.playerID = SystemInfo.deviceUniqueIdentifier;
             pd.playerName = playerName;
-
+            pd.playerColor = color;
+            
             ConnectedToServerEvent?.Invoke();
             Debug.Log("Connected to server");
         }
