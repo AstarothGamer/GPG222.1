@@ -2,7 +2,8 @@ using UnityEngine;
 
 public class RemotePlayer : MonoBehaviour
 {
-    public string playerID;
+    [SerializeField] public string playerID;
+    [SerializeField] public bool canDie = true;
 
     public void SetPosition(Vector2 pos)
     {

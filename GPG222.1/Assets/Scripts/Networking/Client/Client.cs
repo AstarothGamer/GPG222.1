@@ -11,6 +11,7 @@ public class Client : MonoBehaviour
 
     private TcpClient client;
     private NetworkStream stream;
+    RemotePlayer rp;
     private byte[] receiveBuffer = new byte[4096];
     private MemoryStream incomingData = new MemoryStream();
 
@@ -119,17 +120,17 @@ public class Client : MonoBehaviour
         {
             if (pos.playerName != player.playerName)
             {
-                if (!otherPlayers.ContainsKey(pos.playerName))
+                if (!otherPlayers.ContainsKey(pos.playerId))
                 {
                     var prefab = Resources.Load<GameObject>("RemotePlayer");
                     var instance = Instantiate(prefab);
                     var remote = instance.GetComponent<RemotePlayer>();
                     remote.playerID = pos.playerId;
                     instance.name = pos.playerName;
-                    otherPlayers[pos.playerName] = remote;
+                    otherPlayers[pos.playerId] = remote;
                 }
 
-                var remotePlayer = otherPlayers[pos.playerName];
+                var remotePlayer = otherPlayers[pos.playerId];
                 remotePlayer.SetPosition(pos.position);
                 remotePlayer.SetScale(pos.scale);
             }
@@ -151,6 +152,21 @@ public class Client : MonoBehaviour
                 foodById[spawn.foodId] = fsp;
             }
         }
+        else if (packet is PlayerKilledPacket dead)
+        {
+            Debug.LogError("Packet came Killer came");
+            if (player != null && player.playerID == dead.playerId && dead.canDie)
+            {
+                Debug.Log("I should die");
+                player.Die();
+            }
+            else if (otherPlayers.TryGetValue(dead.playerId, out RemotePlayer remote) && dead.canDie)
+            {
+                Debug.Log("Something should be destroied");
+                Destroy(remote.gameObject);
+                otherPlayers.Remove(dead.playerId);
+            }
+        }
     }
 
     public void ConnectToServer(string ip, string playerName)
@@ -164,7 +180,7 @@ public class Client : MonoBehaviour
             client.Connect(ipAddress, serverPort);
             stream = client.GetStream();
 
-            pd.playerID = SystemInfo.deviceUniqueIdentifier;
+            pd.playerID = Guid.NewGuid().ToString();;
             pd.playerName = playerName;
 
             ConnectedToServerEvent?.Invoke();
@@ -185,6 +201,24 @@ public class Client : MonoBehaviour
     public void NotifyFoodEaten(int foodId)
     {
         packetQueue.Add(new FoodEatenPacket(foodId));
+    }
+
+    public void NotifyPlayerShouldDie(string playerId, bool canDie)
+    {
+        PlayerKilledPacket packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
+        SendPacketImmediately(packet); 
+        packetQueue.Add(packet); 
+    }
+
+    private void SendPacketImmediately(BasePacket packet)
+    {
+        if (stream != null && client != null && client.Connected)
+        {
+            byte[] data = PacketHandler.Encode(packet);
+            stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
+            stream.Write(data, 0, data.Length);
+            Debug.LogError($"Sent packet of type {packet.Type}");
+        }
     }
 
     void OnApplicationQuit()
