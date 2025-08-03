@@ -101,9 +101,15 @@ public class Server : MonoBehaviour
                                 BroadcastToAllClients(new FoodEatenPacket(food.foodId));
                             }
                         }
+                        else if (packet is TextPacket textPacket)
+                        { 
+                            Debug.LogError("Received text: " + textPacket.message);
+                            BroadcastToAllClients(textPacket, new(){client});
+                        }
                         else if (packet != null)
                         {
                             BroadcastToAllClients(packet);
+                            
                         }
                     }
                 }
@@ -126,7 +132,7 @@ public class Server : MonoBehaviour
         }
     }
 
-    void BroadcastToAllClients(BasePacket packet)
+    void BroadcastToAllClients(BasePacket packet, List<Socket> exemptClients = null)
     {
         byte[] body = PacketHandler.Encode(packet);
         byte[] full = new byte[4 + body.Length];
@@ -135,7 +141,7 @@ public class Server : MonoBehaviour
 
         foreach (Socket client in clients)
         {
-            if (client.Connected)
+            if (client.Connected && (exemptClients == null || !exemptClients.Contains(client)))
                 client.Send(full);
         }
     }

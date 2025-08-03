@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using ChatSystem;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Client : MonoBehaviour
 {
@@ -20,9 +23,10 @@ public class Client : MonoBehaviour
 
     public int serverPort = 4000;
     private string ipAddress;
-    private Color color;
     public PlayerController player;
     public PlayerData pd;
+    
+    public TMP_InputField chatInputField;
 
     private Dictionary<string, RemotePlayer> otherPlayers = new();
     private Dictionary<int, FoodController> foodById = new();
@@ -37,14 +41,19 @@ public class Client : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            return;
         }
     }
 
     void Update()
     {
         if (player == null)
+        {
             player = FindObjectOfType<PlayerController>();
+        }
+        else
+        {
+            Debug.Log("Player found: " + player.playerName);
+        }
 
         if (client != null && client.Connected && packetQueue.Count > 0)
         {
@@ -118,7 +127,7 @@ public class Client : MonoBehaviour
         }
         else if (packet is PlayerTransformPacket pos)
         {
-            if (pos.playerName != player.playerName)
+            if (player != null && pos.playerName != player.playerName)
             {
                 if (!otherPlayers.ContainsKey(pos.playerName))
                 {
@@ -153,13 +162,21 @@ public class Client : MonoBehaviour
                 foodById[spawn.foodId] = fsp;
             }
         }
+        else if (packet is TextPacket textPacket)
+        {
+            Debug.Log("Received text packet: " + textPacket.message);
+            TextBoxManager.Instance.UpdateText(textPacket.message);
+        }
+        else
+        {
+            Debug.LogWarning("Unknown packet type received: " + packet.GetType());
+        }
     }
 
     public void ConnectToServer(string ip, string playerName, Color color)
     {
         this.name = playerName;
         this.ipAddress = ip;
-        this.color = color;
 
         try
         {
@@ -189,6 +206,27 @@ public class Client : MonoBehaviour
     public void NotifyFoodEaten(int foodId)
     {
         packetQueue.Add(new FoodEatenPacket(foodId));
+    }
+    
+    public void AddChat()
+    {
+        if (chatInputField == null)
+        {
+            chatInputField = GameObject.Find("ChatInputField")?.GetComponent<TMP_InputField>();
+            if (chatInputField == null)
+            {
+                Debug.LogError("Chat input field not found in the scene");
+                return;
+            }
+        }
+        string message = chatInputField.text.Trim();
+        chatInputField.text = string.Empty;
+        if (string.IsNullOrEmpty(message))
+            return;
+        string shortID = pd.playerID.Length > 4 ? pd.playerID.Substring(pd.playerID.Length - 4) : pd.playerID;
+        string text = $"{pd.playerName}#{shortID}: {message}";
+        TextBoxManager.Instance.UpdateText(text);
+        packetQueue.Add(new TextPacket(text));
     }
 
     void OnApplicationQuit()

@@ -10,5 +10,6 @@ public enum PacketType
 {
     PlayerTransform = 0,
     FoodEaten = 1,
-    FoodSpawn = 2
+    FoodSpawn = 2,
+    Text = 3
 }

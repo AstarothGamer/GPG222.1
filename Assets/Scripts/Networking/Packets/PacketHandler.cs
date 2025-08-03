@@ -33,6 +33,7 @@ public static class PacketHandler
                 PacketType.PlayerTransform => PlayerTransformPacket.Read(reader),
                 PacketType.FoodEaten => FoodEatenPacket.Read(reader),
                 PacketType.FoodSpawn => FoodSpawnPacket.Read(reader),
+                PacketType.Text => TextPacket.Read(reader),
                 _ => null
             };
         }
