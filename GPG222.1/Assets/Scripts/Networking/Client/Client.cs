@@ -118,7 +118,7 @@ public class Client : MonoBehaviour
         }
         else if (packet is PlayerTransformPacket pos)
         {
-            if (pos.playerName != player.playerName)
+            if (pos.playerId != player.playerID)
             {
                 if (!otherPlayers.ContainsKey(pos.playerId))
                 {
@@ -206,20 +206,9 @@ public class Client : MonoBehaviour
     public void NotifyPlayerShouldDie(string playerId, bool canDie)
     {
         PlayerKilledPacket packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
-        SendPacketImmediately(packet); 
         packetQueue.Add(packet); 
     }
 
-    private void SendPacketImmediately(BasePacket packet)
-    {
-        if (stream != null && client != null && client.Connected)
-        {
-            byte[] data = PacketHandler.Encode(packet);
-            stream.Write(BitConverter.GetBytes(data.Length), 0, 4);
-            stream.Write(data, 0, data.Length);
-            Debug.LogError($"Sent packet of type {packet.Type}");
-        }
-    }
 
     void OnApplicationQuit()
     {
