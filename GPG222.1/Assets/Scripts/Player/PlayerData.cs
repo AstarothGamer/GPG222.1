@@ -6,4 +6,18 @@ public class PlayerData : MonoBehaviour
 {
     public string playerID;
     public string playerName;
+
+    void Awake()
+    {
+        if (string.IsNullOrEmpty(playerID))
+        {
+
+            playerID = SystemInfo.deviceUniqueIdentifier;
+
+        }
+
+
+
+
+    }
 }

@@ -4,13 +4,45 @@ public class RemotePlayer : MonoBehaviour
 {
     public string playerID;
 
-    public void SetPosition(Vector2 pos)
+    public bool canDie = true;
+
+    public string playerName;
+
+    private Vector3 lastPosition;
+
+    private Vector3 targetScale = Vector3.one;
+
+    void Start()
     {
-        transform.position = pos;
+
+        lastPosition = transform.position;
+
     }
 
-    public void SetScale(float scale)
+    void Update()
     {
-        transform.localScale = Vector3.one * scale;
+
+        transform.position = Vector3.Lerp(transform.position, lastPosition, 10f * Time.deltaTime);
+
+        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 10f * Time.deltaTime);
+
+    }
+
+    public void SetPosition(Vector2 pos)
+    {
+        lastPosition = new Vector3(pos.x, pos.y, 0);
+    }
+
+    public void SetScale(Vector3 scale)
+    {
+        targetScale = scale;
+    }
+
+
+    public void SetCanDie(bool value)
+    {
+
+        canDie = value;
+
     }
 }

@@ -15,6 +15,10 @@ public class Server : MonoBehaviour
     private int foodCount = 40;
     private float mapSize = 10f;
 
+    private List<BoostState> boostList = new();
+
+    private int maxBoosts = 3;
+
     void Start()
     {
         server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -38,6 +42,24 @@ public class Server : MonoBehaviour
                 position = position,
                 isActive = true
             });
+        }
+
+        for (int i = 0; i < maxBoosts; i++)
+        {
+
+            Vector2 position = new Vector2(UnityEngine.Random.Range(-mapSize, mapSize), UnityEngine.Random.Range(-mapSize, mapSize));
+
+            boostList.Add(new BoostState
+            {
+                boostId = i,
+                position = position,
+                isActive = true
+
+            });
+
+
+
+
         }
     }
 
@@ -64,7 +86,28 @@ public class Server : MonoBehaviour
                 }
             }
 
-            newClient.Send(stream.ToArray());
+            foreach (var boost in boostList)
+            {
+
+                if (boost.isActive)
+                {
+
+                    var packet = new SpeedBoostSpawnPacket { boostId = boost.boostId, position = boost.position };
+
+                    byte[] data = PacketHandler.Encode(packet);
+
+                    writer.Write(data.Length);
+
+                    writer.Write(data);
+
+
+                }    
+
+
+
+
+            }
+                newClient.Send(stream.ToArray());
         }
         catch (SocketException) { }
 
@@ -100,6 +143,20 @@ public class Server : MonoBehaviour
                                 food.isActive = false;
                                 BroadcastToAllClients(new FoodEatenPacket(food.foodId));
                             }
+                        }
+                        else if (packet is BoostCollectedPacket collected)
+                        {
+
+                            var boost = boostList.Find(b => b.boostId == collected.boostId);
+
+                            if (boost != null && boost.isActive)
+                            {
+                                boost.isActive = false;
+
+                                BroadcastToAllClients(new BoostCollectedPacket(boost.boostId));
+
+                            }
+
                         }
                         else if (packet != null)
                         {
@@ -146,4 +203,15 @@ public class FoodState
     public int foodId;
     public Vector2 position;
     public bool isActive;
+}
+
+public class BoostState
+{
+    public int boostId;
+
+    public Vector2 position;
+
+    public bool isActive;
+
+
 }

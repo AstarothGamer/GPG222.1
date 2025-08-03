@@ -7,6 +7,15 @@ public class FoodController : MonoBehaviour
     public Vector2 respawnAreaMin = new Vector2(-10f, -10f);
     public Vector2 respawnAreaMax = new Vector2(10f, 10f);
 
+    void Start()
+    {
+
+        Client.Instance.RegisterFood(this);
+
+
+    }
+
+
     public void Consume()
     {
         gameObject.SetActive(false);

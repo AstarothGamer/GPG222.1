@@ -33,6 +33,9 @@ public static class PacketHandler
                 PacketType.PlayerTransform => PlayerTransformPacket.Read(reader),
                 PacketType.FoodEaten => FoodEatenPacket.Read(reader),
                 PacketType.FoodSpawn => FoodSpawnPacket.Read(reader),
+                PacketType.SpeedBoostSpawn => SpeedBoostSpawnPacket.Read(reader),
+                PacketType.BoostCollected => BoostCollectedPacket.Read(reader),
+                PacketType.PlayerKilled => PlayerKilledPacket.Read(reader),
                 _ => null
             };
         }

@@ -24,7 +24,10 @@ public class Client : MonoBehaviour
     public PlayerData pd;
 
     private Dictionary<string, RemotePlayer> otherPlayers = new();
+
     private Dictionary<int, FoodController> foodById = new();
+
+    private Dictionary<int, SpeedBoostController> boostsById = new();
 
     void Awake()
     {
@@ -119,20 +122,67 @@ public class Client : MonoBehaviour
         {
             if (pos.playerName != player.playerName)
             {
-                if (!otherPlayers.ContainsKey(pos.playerName))
+                if (!otherPlayers.ContainsKey(pos.playerId))
                 {
                     var prefab = Resources.Load<GameObject>("RemotePlayer");
                     var instance = Instantiate(prefab);
                     var remote = instance.GetComponent<RemotePlayer>();
                     remote.playerID = pos.playerId;
                     instance.name = pos.playerName;
-                    otherPlayers[pos.playerName] = remote;
+
+                    //otherPlayers[pos.playerName] = remote;
+
+                    otherPlayers[pos.playerId] = remote;
                 }
 
-                var remotePlayer = otherPlayers[pos.playerName];
+                //var remotePlayer = otherPlayers[pos.playerName];
+
+                var remotePlayer = otherPlayers[pos.playerId];
+
                 remotePlayer.SetPosition(pos.position);
-                remotePlayer.SetScale(pos.scale);
+
+                //remotePlayer.SetScale(pos.scale);
+
+                remotePlayer.SetScale(new Vector3(pos.scale, pos.scale, pos.scale));
+
+
+
             }
+
+
+        }
+        else if (packet is PlayerKilledPacket killed)
+        {
+
+            if (player != null && player.playerID == killed.playerId && killed.canDie)
+            {
+
+                player.Die();
+
+            }
+            else if (otherPlayers.TryGetValue(killed.playerId, out var victim))
+            {
+
+                victim.canDie = killed.canDie;
+
+                
+
+                if (killed.canDie)
+                {
+
+                    Destroy(victim.gameObject);
+
+                    otherPlayers.Remove(killed.playerId);
+
+                }
+
+
+            }
+           
+
+
+
+
         }
         else if (packet is FoodSpawnPacket spawn)
         {
@@ -151,6 +201,55 @@ public class Client : MonoBehaviour
                 foodById[spawn.foodId] = fsp;
             }
         }
+
+
+        else if (packet is SpeedBoostSpawnPacket boostSpawn)
+        {
+
+            if (boostsById.ContainsKey(boostSpawn.boostId))
+            {
+
+                var b = boostsById[boostSpawn.boostId];
+
+                b.transform.position = boostSpawn.position;
+
+                b.gameObject.SetActive(true);
+
+            }
+            else
+            {
+
+                var prefab = Resources.Load<GameObject>("SpeedBoost");
+
+                var obj = Instantiate(prefab, boostSpawn.position, Quaternion.identity);
+
+                var controller = obj.GetComponent<SpeedBoostController>();
+
+                controller.boostID = boostSpawn.boostId;
+
+                boostsById[boostSpawn.boostId] = controller;
+
+            }
+
+
+
+        }
+        else if (packet is BoostCollectedPacket boost)
+        {
+            if (player != null)
+            {
+                player.ApplySpeedBoost();
+
+            }
+            if (boostsById.TryGetValue(boost.boostId, out var boostObj))
+            {
+
+                boostObj.Collect();
+
+            }
+
+        }
+        
     }
 
     public void ConnectToServer(string ip, string playerName)
@@ -186,6 +285,24 @@ public class Client : MonoBehaviour
     {
         packetQueue.Add(new FoodEatenPacket(foodId));
     }
+
+    public void NotifyBoostCollected(int boostId)
+    {
+
+        packetQueue.Add(new BoostCollectedPacket(boostId));
+
+
+    }
+    
+
+    public void NotifyPlayerShouldDie(string playerId, bool canDie)
+    {
+
+        var packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
+
+        packetQueue.Add(packet);
+    }
+
 
     void OnApplicationQuit()
     {

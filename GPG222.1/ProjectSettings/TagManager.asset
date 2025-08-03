@@ -4,6 +4,8 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - SpeedBoost
+  - Undefined
   - Food
   layers:
   - Default
