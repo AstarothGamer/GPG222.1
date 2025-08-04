@@ -73,7 +73,7 @@ public class Client : MonoBehaviour
 
         if (client != null && client.Connected && player != null)
         {
-            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform, pd.playerColor));
+            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform));
         }
     }
 
@@ -125,7 +125,7 @@ public class Client : MonoBehaviour
         }
         else if (packet is PlayerTransformPacket pos)
         {
-            if (player != null && pos.playerName != player.playerName)
+            if (player != null && pos.playerId != player.playerID)
             {
                 if (!otherPlayers.ContainsKey(pos.playerId))
                 {
@@ -139,6 +139,8 @@ public class Client : MonoBehaviour
 
                     otherPlayers[pos.playerId] = remote;
                 }
+
+                //var remotePlayer = otherPlayers[pos.playerName];
 
                 var remotePlayer = otherPlayers[pos.playerId];
                 remotePlayer.SetColor(new Color(pos.colorR, pos.colorG, pos.colorB, pos.colorA));
@@ -157,37 +159,22 @@ public class Client : MonoBehaviour
 
 
         }
-        else if (packet is PlayerKilledPacket killed)
+
+        else if (packet is PlayerKilledPacket dead){
         {
-
-            if (player != null && player.playerID == killed.playerId && killed.canDie)
+            Debug.LogError("Packet Killer came");
+            if (player != null && player.playerID == dead.playerId && dead.canDie)
             {
-
+                Debug.Log("I should die");
                 player.Die();
-
             }
-            else if (otherPlayers.TryGetValue(killed.playerId, out var victim))
+            else if (otherPlayers.TryGetValue(dead.playerId, out RemotePlayer remote) && dead.canDie)
             {
-
-                victim.canDie = killed.canDie;
-
-                
-
-                if (killed.canDie)
-                {
-
-                    Destroy(victim.gameObject);
-
-                    otherPlayers.Remove(killed.playerId);
-
-                }
-
-
+                Debug.Log("Something should be destroied");
+                Destroy(remote.gameObject);
+                otherPlayers.Remove(dead.playerId);
             }
-           
-
-
-
+        }
 
         }
         else if (packet is FoodSpawnPacket spawn)
@@ -241,10 +228,8 @@ public class Client : MonoBehaviour
                 boostsById[boostSpawn.boostId] = controller;
 
             }
-
-
-
         }
+        
         else if (packet is BoostCollectedPacket boost)
         {
             if (player != null)
@@ -279,7 +264,14 @@ public class Client : MonoBehaviour
             client.Connect(ipAddress, serverPort);
             stream = client.GetStream();
 
-            pd.playerID = SystemInfo.deviceUniqueIdentifier;
+            // pd.playerID = SystemInfo.deviceUniqueIdentifier; 
+            //Guid.NewGuid was done because checking packets about dying through 
+            //previous version on the same laptop was impossible cause they had the same ID.
+
+            //Changes from player names to id was because i all the time was typing the 
+            //same name for both clients and i tired to reload that again and again.
+
+            pd.playerID = Guid.NewGuid().ToString();
             pd.playerName = playerName;
 
             ConnectedToServerEvent?.Invoke();
@@ -335,12 +327,66 @@ public class Client : MonoBehaviour
     public void NotifyPlayerShouldDie(string playerId, bool canDie)
     {
 
-        var packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
+        PlayerKilledPacket packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
 
         packetQueue.Add(packet);
     }
 
+    public void ClearClientState()
+    {
+        packetQueue.Clear();
+        incomingData.SetLength(0);
+        incomingData.Position = 0;
+        
+        otherPlayers.Clear();
+        foodById.Clear();
+        boostsById.Clear();
+        player = null;
+    }
 
+    public void CleanupConnection()
+    {
+        try
+        {
+            stream.Close();
+            stream = null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error stream closing " + e.Message);
+            stream = null;
+        }
+        try
+        {
+            client.Close();
+            client = null;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error client closing " + e.Message);
+            client = null;
+        }
+    }
+
+    public void Disconnection()
+    {
+        if (client == null || !client.Connected)
+        {
+            return;
+        }
+
+        try
+        {
+            CleanupConnection();
+            ClearClientState();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error on disconection from server " + e.Message);
+            CleanupConnection();
+            ClearClientState();
+        }
+    }
     void OnApplicationQuit()
     {
         stream?.Close();

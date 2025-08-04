@@ -54,4 +54,9 @@ public class RemotePlayer : MonoBehaviour
             renderer.material.color = color;
         }
     }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
 }
