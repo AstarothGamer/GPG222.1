@@ -73,7 +73,7 @@ public class Client : MonoBehaviour
 
         if (client != null && client.Connected && player != null)
         {
-            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform));
+            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform, pd.playerColor));
         }
     }
 
