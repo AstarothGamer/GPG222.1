@@ -17,7 +17,4 @@ public enum PacketType
     BoostCollected = 4,
 
     PlayerKilled = 5
-
-
-
 }

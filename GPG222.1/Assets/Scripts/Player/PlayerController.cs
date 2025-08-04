@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class PlayerController : MonoBehaviour
     private bool isBoosted = false;
 
     private Rigidbody rb;
-    
+
 
 
     PlayerData pd;
@@ -75,7 +76,7 @@ public class PlayerController : MonoBehaviour
                 Client.Instance.NotifyFoodEaten(food.foodID);
                 transform.localScale *= 1.01f;
 
-               // FoodCounter.Instance?.Increment();
+                // FoodCounter.Instance?.Increment();
 
                 FoodSound sound = other.GetComponent<FoodSound>();
 
@@ -96,7 +97,7 @@ public class PlayerController : MonoBehaviour
 
             if (boost != null)
             {
-                
+
 
                 Client.Instance.NotifyBoostCollected(boost.boostID);
 
@@ -106,40 +107,31 @@ public class PlayerController : MonoBehaviour
 
         }
 
-        if (other.CompareTag("Player"))
+        if (other.GetComponent<RemotePlayer>())
         {
-
-            var otherPlayer = other.GetComponent<RemotePlayer>();
-
-            if (otherPlayer != null)
-            {
-
-                float mySize = transform.localScale.x;
-
-                float theirSize = other.transform.localScale.x;
-
-                if (mySize > theirSize * 1.1f && otherPlayer.canDie)
-                {
-
-                    Client.Instance.NotifyPlayerShouldDie(otherPlayer.playerID, true);
-
-                }
-                else if (theirSize > mySize * 1.1f && canDie)
-                {
-
-                    Client.Instance.NotifyPlayerShouldDie(playerID, true);
-
-                }
-            }
+            Transform enemy = other.transform;
+            Kill(enemy);
         }
     }
 
     public void Die()
     {
-
         Debug.Log("Player has died.");
+        Client.Instance.Disconnection();
+        SceneManager.LoadScene("MainMenu");
+    }
+    
+    public void Kill(Transform enemy)
+    {
+        RemotePlayer rp = enemy.GetComponent<RemotePlayer>();
+        if (rp == null) return;
+        Debug.Log("Trying eat another player");
 
-        gameObject.SetActive(false);
-
+        if (rp.canDie && transform.localScale.magnitude > enemy.localScale.magnitude)
+        {
+            Debug.Log("Another player should die");
+            rp.Die();
+            Client.Instance.NotifyPlayerShouldDie(rp.playerID, rp.canDie);
+        }
     }
 }

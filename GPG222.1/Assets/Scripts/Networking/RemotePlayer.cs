@@ -45,4 +45,9 @@ public class RemotePlayer : MonoBehaviour
         canDie = value;
 
     }
+
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
 }
