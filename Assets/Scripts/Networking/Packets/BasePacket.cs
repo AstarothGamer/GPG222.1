@@ -11,5 +11,8 @@ public enum PacketType
     PlayerTransform = 0,
     FoodEaten = 1,
     FoodSpawn = 2,
-    Text = 3
+    SpeedBoostSpawn = 3,
+    BoostCollected = 4,
+    PlayerKilled = 5,
+    Text = 6
 }

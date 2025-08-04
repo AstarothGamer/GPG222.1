@@ -29,7 +29,10 @@ public class Client : MonoBehaviour
     public TMP_InputField chatInputField;
 
     private Dictionary<string, RemotePlayer> otherPlayers = new();
+
     private Dictionary<int, FoodController> foodById = new();
+
+    private Dictionary<int, SpeedBoostController> boostsById = new();
 
     void Awake()
     {
@@ -41,19 +44,14 @@ public class Client : MonoBehaviour
         else
         {
             Destroy(gameObject);
+            return;
         }
     }
 
     void Update()
     {
         if (player == null)
-        {
             player = FindObjectOfType<PlayerController>();
-        }
-        else
-        {
-            Debug.Log("Player found: " + player.playerName);
-        }
 
         if (client != null && client.Connected && packetQueue.Count > 0)
         {
@@ -129,21 +127,68 @@ public class Client : MonoBehaviour
         {
             if (player != null && pos.playerName != player.playerName)
             {
-                if (!otherPlayers.ContainsKey(pos.playerName))
+                if (!otherPlayers.ContainsKey(pos.playerId))
                 {
                     var prefab = Resources.Load<GameObject>("RemotePlayer");
                     var instance = Instantiate(prefab);
                     var remote = instance.GetComponent<RemotePlayer>();
                     remote.playerID = pos.playerId;
                     instance.name = pos.playerName;
-                    otherPlayers[pos.playerName] = remote;
+
+                    //otherPlayers[pos.playerName] = remote;
+
+                    otherPlayers[pos.playerId] = remote;
                 }
 
-                var remotePlayer = otherPlayers[pos.playerName];
+                var remotePlayer = otherPlayers[pos.playerId];
                 remotePlayer.SetColor(new Color(pos.colorR, pos.colorG, pos.colorB, pos.colorA));
+                //var remotePlayer = otherPlayers[pos.playerName];
+
+
                 remotePlayer.SetPosition(pos.position);
-                remotePlayer.SetScale(pos.scale);
+
+                //remotePlayer.SetScale(pos.scale);
+
+                remotePlayer.SetScale(new Vector3(pos.scale, pos.scale, pos.scale));
+
+
+
             }
+
+
+        }
+        else if (packet is PlayerKilledPacket killed)
+        {
+
+            if (player != null && player.playerID == killed.playerId && killed.canDie)
+            {
+
+                player.Die();
+
+            }
+            else if (otherPlayers.TryGetValue(killed.playerId, out var victim))
+            {
+
+                victim.canDie = killed.canDie;
+
+                
+
+                if (killed.canDie)
+                {
+
+                    Destroy(victim.gameObject);
+
+                    otherPlayers.Remove(killed.playerId);
+
+                }
+
+
+            }
+           
+
+
+
+
         }
         else if (packet is FoodSpawnPacket spawn)
         {
@@ -167,16 +212,66 @@ public class Client : MonoBehaviour
             Debug.Log("Received text packet: " + textPacket.message);
             TextBoxManager.Instance.UpdateText(textPacket.message);
         }
+
+
+        else if (packet is SpeedBoostSpawnPacket boostSpawn)
+        {
+
+            if (boostsById.ContainsKey(boostSpawn.boostId))
+            {
+
+                var b = boostsById[boostSpawn.boostId];
+
+                b.transform.position = boostSpawn.position;
+
+                b.gameObject.SetActive(true);
+
+            }
+            else
+            {
+
+                var prefab = Resources.Load<GameObject>("SpeedBoost");
+
+                var obj = Instantiate(prefab, boostSpawn.position, Quaternion.identity);
+
+                var controller = obj.GetComponent<SpeedBoostController>();
+
+                controller.boostID = boostSpawn.boostId;
+
+                boostsById[boostSpawn.boostId] = controller;
+
+            }
+
+
+
+        }
+        else if (packet is BoostCollectedPacket boost)
+        {
+            if (player != null)
+            {
+                player.ApplySpeedBoost();
+
+            }
+            if (boostsById.TryGetValue(boost.boostId, out var boostObj))
+            {
+
+                boostObj.Collect();
+
+            }
+
+        }
         else
         {
             Debug.LogWarning("Unknown packet type received: " + packet.GetType());
         }
+        
     }
 
     public void ConnectToServer(string ip, string playerName, Color color)
     {
         this.name = playerName;
         this.ipAddress = ip;
+        pd.playerColor = color;
 
         try
         {
@@ -186,8 +281,7 @@ public class Client : MonoBehaviour
 
             pd.playerID = SystemInfo.deviceUniqueIdentifier;
             pd.playerName = playerName;
-            pd.playerColor = color;
-            
+
             ConnectedToServerEvent?.Invoke();
             Debug.Log("Connected to server");
         }
@@ -228,6 +322,24 @@ public class Client : MonoBehaviour
         TextBoxManager.Instance.UpdateText(text);
         packetQueue.Add(new TextPacket(text));
     }
+
+    public void NotifyBoostCollected(int boostId)
+    {
+
+        packetQueue.Add(new BoostCollectedPacket(boostId));
+
+
+    }
+    
+
+    public void NotifyPlayerShouldDie(string playerId, bool canDie)
+    {
+
+        var packet = new PlayerKilledPacket { playerId = playerId, canDie = canDie };
+
+        packetQueue.Add(packet);
+    }
+
 
     void OnApplicationQuit()
     {

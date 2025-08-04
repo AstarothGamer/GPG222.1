@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Server : MonoBehaviour
@@ -14,6 +15,10 @@ public class Server : MonoBehaviour
     private List<FoodState> foodList = new();
     private int foodCount = 40;
     private float mapSize = 10f;
+
+    private List<BoostState> boostList = new();
+
+    private int maxBoosts = 3;
 
     void Start()
     {
@@ -38,6 +43,24 @@ public class Server : MonoBehaviour
                 position = position,
                 isActive = true
             });
+        }
+
+        for (int i = 0; i < maxBoosts; i++)
+        {
+
+            Vector2 position = new Vector2(UnityEngine.Random.Range(-mapSize, mapSize), UnityEngine.Random.Range(-mapSize, mapSize));
+
+            boostList.Add(new BoostState
+            {
+                boostId = i,
+                position = position,
+                isActive = true
+            
+            });
+
+
+
+
         }
     }
 
@@ -64,7 +87,28 @@ public class Server : MonoBehaviour
                 }
             }
 
-            newClient.Send(stream.ToArray());
+            foreach (var boost in boostList)
+            {
+
+                if (boost.isActive)
+                {
+
+                    var packet = new SpeedBoostSpawnPacket { boostId = boost.boostId, position = boost.position };
+
+                    byte[] data = PacketHandler.Encode(packet);
+
+                    writer.Write(data.Length);
+
+                    writer.Write(data);
+
+
+                }    
+
+
+
+
+            }
+                newClient.Send(stream.ToArray());
         }
         catch (SocketException) { }
 
@@ -101,6 +145,20 @@ public class Server : MonoBehaviour
                                 BroadcastToAllClients(new FoodEatenPacket(food.foodId));
                             }
                         }
+                        else if (packet is BoostCollectedPacket collected)
+                        {
+
+                            var boost = boostList.Find(b => b.boostId == collected.boostId);
+
+                            if (boost != null && boost.isActive)
+                            {
+                                boost.isActive = false;
+
+                                BroadcastToAllClients(new BoostCollectedPacket(boost.boostId));
+
+                            }
+
+                        }
                         else if (packet is TextPacket textPacket)
                         { 
                             Debug.LogError("Received text: " + textPacket.message);
@@ -109,7 +167,6 @@ public class Server : MonoBehaviour
                         else if (packet != null)
                         {
                             BroadcastToAllClients(packet);
-                            
                         }
                     }
                 }
@@ -132,7 +189,7 @@ public class Server : MonoBehaviour
         }
     }
 
-    void BroadcastToAllClients(BasePacket packet, List<Socket> exemptClients = null)
+    void BroadcastToAllClients(BasePacket packet, List<Socket> excludeClients = null)
     {
         byte[] body = PacketHandler.Encode(packet);
         byte[] full = new byte[4 + body.Length];
@@ -141,7 +198,7 @@ public class Server : MonoBehaviour
 
         foreach (Socket client in clients)
         {
-            if (client.Connected && (exemptClients == null || !exemptClients.Contains(client)))
+            if (client.Connected && (excludeClients == null || !excludeClients.Contains(client)))
                 client.Send(full);
         }
     }
@@ -152,4 +209,15 @@ public class FoodState
     public int foodId;
     public Vector2 position;
     public bool isActive;
+}
+
+public class BoostState
+{
+    public int boostId;
+
+    public Vector2 position;
+
+    public bool isActive;
+
+
 }

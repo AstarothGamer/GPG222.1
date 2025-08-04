@@ -7,10 +7,15 @@ public class FoodController : MonoBehaviour
     public Vector2 respawnAreaMin = new Vector2(-10f, -10f);
     public Vector2 respawnAreaMax = new Vector2(10f, 10f);
 
-    private void Start()
+    void Start()
     {
-        Respawn();
+
+        Client.Instance.RegisterFood(this);
+
+
     }
+
+
     public void Consume()
     {
         gameObject.SetActive(false);
@@ -29,10 +34,8 @@ public class FoodController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        // Debug.LogError("Food collided with: " + other.name);
         if (other.CompareTag("Player"))
         {
-            // Debug.LogError("Food consumed by player: " + other.name);
             Consume();
             Client.Instance.NotifyFoodEaten(foodID);
         }
