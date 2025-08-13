@@ -16,18 +16,8 @@ public class FoodController : MonoBehaviour
     public void Consume()
     {
         gameObject.SetActive(false);
-        Invoke(nameof(Respawn), respawnTime);
     }
 
-    void Respawn()
-    {
-        Vector2 randomPos = new Vector2(
-            Random.Range(respawnAreaMin.x, respawnAreaMax.x),
-            Random.Range(respawnAreaMin.y, respawnAreaMax.y));
-
-        transform.position = randomPos;
-        gameObject.SetActive(true);
-    }
 
     private void OnTriggerEnter(Collider other)
     {

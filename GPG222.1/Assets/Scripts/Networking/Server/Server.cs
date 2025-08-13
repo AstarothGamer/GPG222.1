@@ -4,6 +4,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using UnityEngine;
+using System.Collections;
+using Unity.VisualScripting;
 
 public class Server : MonoBehaviour
 {
@@ -155,11 +157,11 @@ public class Server : MonoBehaviour
 
             if (length <= 0 || length > MaxPacketSize)
             {
-                c.markDisconnected = true; 
+                c.markDisconnected = true;
                 break;
             }
 
-            if (c.inBuffer.Count < 4 + length) break; 
+            if (c.inBuffer.Count < 4 + length) break;
 
             byte[] packetData = new byte[length];
             c.inBuffer.CopyTo(4, packetData, 0, length);
@@ -177,33 +179,34 @@ public class Server : MonoBehaviour
         switch (packet)
         {
             case FoodEatenPacket eaten:
-            {
-                var food = foodList.Find(f => f.foodId == eaten.foodId);
-                if (food != null && food.isActive)
                 {
-                    food.isActive = false;
-                    BroadcastToAllClients(packet);
+                    var food = foodList.Find(f => f.foodId == eaten.foodId);
+                    if (food != null && food.isActive)
+                    {
+                        food.isActive = false;
+                        StartCoroutine(Respawn(food));
+                        BroadcastToAllClients(packet);
+                    }
+                    break;
                 }
-                break;
-            }
             case BoostCollectedPacket collected:
-            {
-                var boost = boostList.Find(b => b.boostId == collected.boostId);
-                if (boost != null && boost.isActive)
                 {
-                    boost.isActive = false;
-                    BroadcastToAllClients(packet);
+                    var boost = boostList.Find(b => b.boostId == collected.boostId);
+                    if (boost != null && boost.isActive)
+                    {
+                        boost.isActive = false;
+                        BroadcastToAllClients(packet);
+                    }
+                    break;
                 }
-                break;
-            }
             case PlayerTransformPacket pt:
-            {
-                if (string.IsNullOrEmpty(sender.playerId))
-                    sender.playerId = pt.playerId;
+                {
+                    if (string.IsNullOrEmpty(sender.playerId))
+                        sender.playerId = pt.playerId;
 
-                BroadcastToAllClients(packet, excludeId: pt.playerId);
-                break;
-            }
+                    BroadcastToAllClients(packet, excludeId: pt.playerId);
+                    break;
+                }
             default:
                 BroadcastToAllClients(packet);
                 break;
@@ -254,7 +257,7 @@ public class Server : MonoBehaviour
                 catch (SocketException ex)
                 {
                     if (ex.SocketErrorCode is SocketError.WouldBlock or SocketError.IOPending or SocketError.NoBufferSpaceAvailable)
-                        break; 
+                        break;
                     c.markDisconnected = true;
                     break;
                 }
@@ -276,6 +279,29 @@ public class Server : MonoBehaviour
             try { c.socket?.Close(); } catch { }
             clients.RemoveAt(i);
             Debug.Log("Client disconnected");
+        }
+    }
+
+    private IEnumerator Respawn(FoodState food)
+    {
+        yield return new WaitForSeconds(5f);
+        Vector2 randomPos = new Vector2(
+            UnityEngine.Random.Range(-mapSize, mapSize),
+            UnityEngine.Random.Range(-mapSize, mapSize));
+
+        food.position = randomPos;
+        food.isActive = true;
+        
+
+        using var ms = new MemoryStream();
+        using var bw = new BinaryWriter(ms);
+
+        var p = new FoodSpawnPacket { foodId = food.foodId, position = food.position };
+        EnqueuePacketRaw(bw, p);
+
+        foreach(var state in clients)
+        {
+            state.outbox.Enqueue(ms.ToArray());
         }
     }
 }
