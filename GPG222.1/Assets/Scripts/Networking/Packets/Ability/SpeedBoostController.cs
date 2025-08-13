@@ -37,8 +37,6 @@ public class SpeedBoostController : MonoBehaviour
         transform.position = randomPos;
 
         gameObject.SetActive(true);
-
-
     }
 
 
@@ -48,15 +46,10 @@ public class SpeedBoostController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
 
-            Client.Instance.NotifyBoostCollected(boostID);
+            // Client.Instance.NotifyBoostCollected(boostID);
 
             Collect();
 
         }
-
-
-
     }
-
-
 }

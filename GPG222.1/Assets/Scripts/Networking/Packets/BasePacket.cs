@@ -4,6 +4,7 @@ public abstract class BasePacket
 {
     public abstract PacketType Type { get; }
     public abstract void WriteTo(BinaryWriter writer);
+    public abstract void Read(BinaryReader reader);
 }
 
 public enum PacketType

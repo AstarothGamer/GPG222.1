@@ -5,7 +5,7 @@ public class PlayerTransformPacket : BasePacket
 {
     public string playerId;
     public string playerName;
-    public Vector2 position;
+    public Vector3 position;
     public float scale;
 
     public PlayerTransformPacket() {}
@@ -29,18 +29,19 @@ public class PlayerTransformPacket : BasePacket
         writer.Write(playerName);
         writer.Write(position.x);
         writer.Write(position.y);
+        writer.Write(position.z);
         writer.Write(scale);
     }
 
-    public static PlayerTransformPacket Read(BinaryReader reader)
+    public override void Read(BinaryReader reader)
     {
-        var packet = new PlayerTransformPacket();
-        packet.playerId = reader.ReadString();
-        packet.playerName = reader.ReadString();
-        float x = reader.ReadSingle();
-        float y = reader.ReadSingle();
-        packet.position = new Vector2(x, y);
-        packet.scale = reader.ReadSingle();
-        return packet;
+        playerId = reader.ReadString();
+        playerName = reader.ReadString();
+        position = new Vector3(
+            reader.ReadSingle(),
+            reader.ReadSingle(),
+            reader.ReadSingle()
+        );
+        scale = reader.ReadSingle();
     }
 }

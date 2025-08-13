@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -7,10 +8,8 @@ public static class PacketHandler
     {
         using var ms = new MemoryStream();
         using var writer = new BinaryWriter(ms);
-
         writer.Write((int)packet.Type);
         packet.WriteTo(writer);
-
         return ms.ToArray();
     }
 
@@ -22,27 +21,26 @@ public static class PacketHandler
             return null;
         }
 
-        using var ms = new MemoryStream(data, offset, length);
-        using var reader = new BinaryReader(ms);
+        int type = BitConverter.ToInt32(data, offset);
+        BasePacket packet = type switch
+        {
+            0 => new PlayerTransformPacket(),
+            1 => new FoodEatenPacket(),
+            2 => new FoodSpawnPacket(),
+            3 => new SpeedBoostSpawnPacket(),
+            4 => new BoostCollectedPacket(),
+            5 => new PlayerKilledPacket(),
+            _ => null
+        };
 
-        try
+        if (packet != null)
         {
-            PacketType type = (PacketType)reader.ReadInt32();
-            return type switch
-            {
-                PacketType.PlayerTransform => PlayerTransformPacket.Read(reader),
-                PacketType.FoodEaten => FoodEatenPacket.Read(reader),
-                PacketType.FoodSpawn => FoodSpawnPacket.Read(reader),
-                PacketType.SpeedBoostSpawn => SpeedBoostSpawnPacket.Read(reader),
-                PacketType.BoostCollected => BoostCollectedPacket.Read(reader),
-                PacketType.PlayerKilled => PlayerKilledPacket.Read(reader),
-                _ => null
-            };
+            using var ms = new MemoryStream(data, offset, length);
+            using var reader = new BinaryReader(ms);
+            reader.ReadInt32(); // skip type
+            packet.Read(reader);
         }
-        catch (EndOfStreamException e)
-        {
-            Debug.LogError($"Failed to decode packet: {e.Message}");
-            return null;
-        }
+
+        return packet;
     }
 }

@@ -6,6 +6,11 @@ public class PlayerKilledPacket : BasePacket
     public string playerId;
     public bool canDie;
 
+    public PlayerKilledPacket()
+    {
+        canDie = true;
+    }
+
     public override PacketType Type => PacketType.PlayerKilled;
 
     public override void WriteTo(BinaryWriter writer)
@@ -14,12 +19,9 @@ public class PlayerKilledPacket : BasePacket
         writer.Write(canDie);
     }
 
-    public static PlayerKilledPacket Read(BinaryReader reader)
+    public override void Read(BinaryReader reader)
     {
-        return new PlayerKilledPacket
-        {
-            playerId = reader.ReadString(),
-            canDie = reader.ReadBoolean()
-        };
+        playerId = reader.ReadString();
+        canDie = reader.ReadBoolean();
     }
 }

@@ -9,10 +9,7 @@ public class FoodController : MonoBehaviour
 
     void Start()
     {
-
         Client.Instance.RegisterFood(this);
-
-
     }
 
 
@@ -37,7 +34,6 @@ public class FoodController : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             Consume();
-            Client.Instance.NotifyFoodEaten(foodID);
         }
     }
 }

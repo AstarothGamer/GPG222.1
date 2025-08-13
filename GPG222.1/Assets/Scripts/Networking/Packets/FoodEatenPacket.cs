@@ -4,7 +4,7 @@ public class FoodEatenPacket : BasePacket
 {
     public int foodId;
 
-    public FoodEatenPacket() {}
+    public FoodEatenPacket() { }
 
     public FoodEatenPacket(int id)
     {
@@ -18,9 +18,8 @@ public class FoodEatenPacket : BasePacket
         writer.Write(foodId);
     }
 
-    public static FoodEatenPacket Read(BinaryReader reader)
+    public override void Read(BinaryReader reader)
     {
-        int id = reader.ReadInt32();
-        return new FoodEatenPacket(id);
+        foodId = reader.ReadInt32();
     }
 }
