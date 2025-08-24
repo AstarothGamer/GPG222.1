@@ -12,30 +12,66 @@ public class RemotePlayer : MonoBehaviour
 
     private Vector3 targetScale = Vector3.one;
 
-    void Start()
+
+    private PlayerName nameTag;
+
+
+    private void Start()
     {
 
-        lastPosition = transform.position;
+       // lastPosition = transform.position;
+
+        nameTag = GetComponent<PlayerName>() ?? gameObject.AddComponent<PlayerName>();
+
+        var displayName = string.IsNullOrEmpty(playerName) ? gameObject.name : playerName;
+
+        nameTag.SetText(displayName);
+
 
     }
 
-    void Update()
+    public void ApplyName(string name)
     {
+        playerName = name;
 
-        transform.position = Vector3.Lerp(transform.position, lastPosition, 10f * Time.deltaTime);
+        if (nameTag == null)
+        {
 
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 10f * Time.deltaTime);
+            nameTag = GetComponent<PlayerName>() ?? gameObject.AddComponent<PlayerName>();
+
+        }
+
+        nameTag.SetText(playerName);
+
+        gameObject.name = playerName;
 
     }
 
-    public void SetPosition(Vector2 pos)
+
+    //void Update()
+    //{
+
+    //    transform.position = Vector3.Lerp(transform.position, lastPosition, 10f * Time.deltaTime);
+
+    //    transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 10f * Time.deltaTime);
+
+    //}
+
+    public void SetPosition(Vector3 pos)
     {
-        lastPosition = new Vector3(pos.x, pos.y, 0);
+        // lastPosition = new Vector3(pos.x, pos.y, 0);
+
+        lastPosition = pos;
+
+        transform.position = pos;
+
     }
 
     public void SetScale(Vector3 scale)
     {
         targetScale = scale;
+
+        transform.localScale = scale;
     }
 
 

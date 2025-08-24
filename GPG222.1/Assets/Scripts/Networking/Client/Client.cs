@@ -171,6 +171,7 @@ public class Client : MonoBehaviour
                     GameObject instance = Instantiate(prefab);
                     RemotePlayer remote = instance.GetComponent<RemotePlayer>();
                     remote.playerID = pos.playerId;
+                    remote.ApplyName(pos.playerName);
                     instance.name = pos.playerName;
                     otherPlayers[pos.playerId] = remote;
                 }
