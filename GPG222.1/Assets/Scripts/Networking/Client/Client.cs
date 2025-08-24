@@ -42,6 +42,17 @@ public class Client : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
+
+            if (pd == null)
+            {
+
+                var pdGo = GameObject.Find("PlayerData") ?? new GameObject("PlayerData");
+
+                pd = pdGo.GetComponent<PlayerData>() ?? pdGo.AddComponent<PlayerData>();
+
+                DontDestroyOnLoad(pdGo);
+
+            }
         }
         else
         {
@@ -239,7 +250,10 @@ public class Client : MonoBehaviour
 
     public void ConnectToServer(string ip, string playerName)
     {
-        ipAddress = ip;
+        //ipAddress = ip;
+
+        ipAddress = string.IsNullOrWhiteSpace(ip) ? "127.0.0.1" : ip.Trim();
+
         try
         {
             client = new TcpClient();
@@ -247,7 +261,20 @@ public class Client : MonoBehaviour
             client.Connect(ipAddress, serverPort);
             stream = client.GetStream();
 
+            if (pd == null)
+            {
+
+                var pdGo = GameObject.Find("PlayerData") ?? new GameObject("PlayerData");
+
+                pd = pdGo.GetComponent<PlayerData>() ?? pdGo.AddComponent<PlayerData>();
+
+                DontDestroyOnLoad(pdGo);
+
+            }
+
+
             pd.playerID = Guid.NewGuid().ToString();
+
             pd.playerName = playerName;
 
             ConnectedToServerEvent?.Invoke();

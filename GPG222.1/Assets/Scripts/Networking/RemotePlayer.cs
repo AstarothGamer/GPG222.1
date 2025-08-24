@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+
+
 
 public class RemotePlayer : MonoBehaviour
 {
@@ -16,6 +19,18 @@ public class RemotePlayer : MonoBehaviour
     private PlayerName nameTag;
 
 
+    public float invulnerabilityDuration = 2f;
+
+    //private Renderer[] blinkRenderers;
+
+    //private void Awake()
+    //{
+
+    //    blinkRenderers = GetBlinkRenderers();
+
+    //}
+
+
     private void Start()
     {
 
@@ -27,6 +42,7 @@ public class RemotePlayer : MonoBehaviour
 
         nameTag.SetText(displayName);
 
+        StartCoroutine(InvulnerabilityRoutine(invulnerabilityDuration));
 
     }
 
@@ -86,4 +102,96 @@ public class RemotePlayer : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    //private Renderer[] GetBlinkRenderers()
+    //{
+
+    //    var all = GetComponentsInChildren<Renderer>(true);
+
+    //    var list = new System.Collections.Generic.List<Renderer>();
+
+    //    foreach (var r in all)
+    //    {
+
+    //        if (r == null)
+    //        {
+
+    //            continue;
+
+    //        }
+
+    //        var n = r.gameObject.name;
+
+    //        if (n != null && n.Contains("NameTag"))
+    //        {
+
+    //            continue;
+
+    //        }
+
+    //        list.Add(r);
+
+    //    }
+
+    //    return list.ToArray();
+    //}
+
+    private IEnumerator InvulnerabilityRoutine(float duration)
+    {
+
+        canDie = false;
+
+        yield return new WaitForSeconds(duration);
+
+        canDie = true;
+
+        //float end = Time.time + duration;
+
+        //bool on = true;
+
+        //float interval = 0.15f;
+
+        //while (Time.time < end)
+        //{
+
+        //    on = !on;
+
+        //    foreach (var r in blinkRenderers)
+        //    {
+
+        //        if (r != null)
+        //        {
+
+        //            r.enabled = on;
+
+        //        }
+
+        //    }
+
+        //    yield return new WaitForSeconds(interval);
+        //}
+
+        //foreach (var r in blinkRenderers)
+        //{
+
+        //    if (r != null)
+        //    {
+
+        //        r.enabled = true;
+
+        //    }
+
+
+
+        //}
+
+
+    }
+
+
+
+
+
+
+
 }

@@ -22,6 +22,11 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 inputDir = Vector3.zero;
 
+    public float invulnerabilityDuration = 2f;
+
+    //private Renderer[] blinkRenderers;
+
+
     void Awake()
     {
         //pd = FindObjectOfType<PlayerData>();
@@ -47,13 +52,11 @@ public class PlayerController : MonoBehaviour
 
         rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
 
-
-
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
 
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
-
+       // blinkRenderers = GetBlinkRenderers();
 
     }
 
@@ -79,10 +82,20 @@ public class PlayerController : MonoBehaviour
             }
 
         }
+        if (string.IsNullOrEmpty(playerName))
+        {
 
+            playerName = gameObject.name;
+
+
+
+        }
+            
         nameTag = GetComponent<PlayerName>() ?? gameObject.AddComponent<PlayerName>();
 
         nameTag.SetText(playerName);
+
+        StartCoroutine(InvulnerabilityRoutine(invulnerabilityDuration));
 
     }
 
@@ -254,4 +267,97 @@ public class PlayerController : MonoBehaviour
             rp.Die(); // Удаление после отправки пакета
         }
     }
+
+    //private Renderer[] GetBlinkRenderers()
+    //{
+    //    var all = GetComponentsInChildren<Renderer>(true);
+
+    //    var list = new System.Collections.Generic.List<Renderer>();
+
+    //    foreach (var r in all)
+    //    {
+
+    //        if (r == null)
+    //        {
+
+    //            continue;
+
+    //        }
+
+    //        var n = r.gameObject.name;
+
+    //        if (n != null && n.Contains("NameTag"))
+    //        {
+    //            continue;
+
+                
+
+    //        }
+
+    //        list.Add(r);
+            
+
+    //    }
+
+    //    return list.ToArray();
+
+    //}
+
+
+    private IEnumerator InvulnerabilityRoutine(float duration)
+    {
+
+        canDie = false;
+
+        yield return new WaitForSeconds(duration);
+
+        canDie = true;
+
+        //float end = Time.time + duration;
+
+        //bool on = true;
+
+        //float interval = 0.15f;
+
+
+        //while (Time.time < end)
+        //{
+
+        //    on = !on;
+
+        //}
+        //foreach (var r in blinkRenderers)
+        //{
+
+        //    if (r != null)
+        //    {
+
+        //        r.enabled = on;
+
+        //    }
+
+        //    yield return new WaitForSeconds(interval);
+
+        //}
+
+        //foreach (var r in blinkRenderers)
+        //{
+
+        //    if (r != null)
+        //    {
+
+        //        r.enabled = true;
+
+        //    }
+
+        //}
+
+    }
+    
+
+
+
+
+
+
 }
