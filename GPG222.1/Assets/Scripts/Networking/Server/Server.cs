@@ -60,6 +60,13 @@ public class Server : MonoBehaviour
         ReceiveFromClients();
         FlushOutgoing();
         CleanupDisconnected();
+        StartGame();
+        
+        if (gameStarted && clients.Count == 0)
+        {
+            server.Close();
+            GetComponent<RestartServer>().Restart();
+        }
     }
 
     private void StartGame()

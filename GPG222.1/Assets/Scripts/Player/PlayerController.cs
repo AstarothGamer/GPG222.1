@@ -252,7 +252,7 @@ public class PlayerController : MonoBehaviour
         //Client.Instance?.Disconnection();
         //SceneManager.LoadScene("MainMenu");
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void Kill(Transform enemy)
