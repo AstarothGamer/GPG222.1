@@ -16,9 +16,5 @@ public class PlayerData : MonoBehaviour
             playerID = SystemInfo.deviceUniqueIdentifier;
 
         }
-
-
-
-
     }
 }

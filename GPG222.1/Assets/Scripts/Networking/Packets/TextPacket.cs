@@ -18,8 +18,8 @@ public class TextPacket : BasePacket
         writer.Write(message ?? "");
     }
 
-    public static TextPacket Read(BinaryReader reader)
+    public override void Read(BinaryReader reader)
     {
-        return new TextPacket(reader.ReadString());
+        message = reader.ReadString();
     }
 }

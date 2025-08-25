@@ -1,4 +1,7 @@
 using UnityEngine;
+using System.Collections;
+
+
 
 public class RemotePlayer : MonoBehaviour
 {
@@ -12,30 +15,79 @@ public class RemotePlayer : MonoBehaviour
 
     private Vector3 targetScale = Vector3.one;
 
-    void Start()
+
+    private PlayerName nameTag;
+
+
+    public float invulnerabilityDuration = 2f;
+
+    //private Renderer[] blinkRenderers;
+
+    //private void Awake()
+    //{
+
+    //    blinkRenderers = GetBlinkRenderers();
+
+    //}
+
+
+    private void Start()
     {
 
-        lastPosition = transform.position;
+       // lastPosition = transform.position;
+
+        nameTag = GetComponent<PlayerName>() ?? gameObject.AddComponent<PlayerName>();
+
+        var displayName = string.IsNullOrEmpty(playerName) ? gameObject.name : playerName;
+
+        nameTag.SetText(displayName);
+
+        StartCoroutine(InvulnerabilityRoutine(invulnerabilityDuration));
 
     }
 
-    void Update()
+    public void ApplyName(string name)
     {
+        playerName = name;
 
-        transform.position = Vector3.Lerp(transform.position, lastPosition, 10f * Time.deltaTime);
+        if (nameTag == null)
+        {
 
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 10f * Time.deltaTime);
+            nameTag = GetComponent<PlayerName>() ?? gameObject.AddComponent<PlayerName>();
+
+        }
+
+        nameTag.SetText(playerName);
+
+        gameObject.name = playerName;
 
     }
 
-    public void SetPosition(Vector2 pos)
+
+    //void Update()
+    //{
+
+    //    transform.position = Vector3.Lerp(transform.position, lastPosition, 10f * Time.deltaTime);
+
+    //    transform.localScale = Vector3.Lerp(transform.localScale, targetScale, 10f * Time.deltaTime);
+
+    //}
+
+    public void SetPosition(Vector3 pos)
     {
-        lastPosition = new Vector3(pos.x, pos.y, 0);
+        // lastPosition = new Vector3(pos.x, pos.y, 0);
+
+        lastPosition = pos;
+
+        transform.position = pos;
+
     }
 
     public void SetScale(Vector3 scale)
     {
         targetScale = scale;
+
+        transform.localScale = scale;
     }
 
 
@@ -59,4 +111,96 @@ public class RemotePlayer : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
+    //private Renderer[] GetBlinkRenderers()
+    //{
+
+    //    var all = GetComponentsInChildren<Renderer>(true);
+
+    //    var list = new System.Collections.Generic.List<Renderer>();
+
+    //    foreach (var r in all)
+    //    {
+
+    //        if (r == null)
+    //        {
+
+    //            continue;
+
+    //        }
+
+    //        var n = r.gameObject.name;
+
+    //        if (n != null && n.Contains("NameTag"))
+    //        {
+
+    //            continue;
+
+    //        }
+
+    //        list.Add(r);
+
+    //    }
+
+    //    return list.ToArray();
+    //}
+
+    private IEnumerator InvulnerabilityRoutine(float duration)
+    {
+
+        canDie = false;
+
+        yield return new WaitForSeconds(duration);
+
+        canDie = true;
+
+        //float end = Time.time + duration;
+
+        //bool on = true;
+
+        //float interval = 0.15f;
+
+        //while (Time.time < end)
+        //{
+
+        //    on = !on;
+
+        //    foreach (var r in blinkRenderers)
+        //    {
+
+        //        if (r != null)
+        //        {
+
+        //            r.enabled = on;
+
+        //        }
+
+        //    }
+
+        //    yield return new WaitForSeconds(interval);
+        //}
+
+        //foreach (var r in blinkRenderers)
+        //{
+
+        //    if (r != null)
+        //    {
+
+        //        r.enabled = true;
+
+        //    }
+
+
+
+        //}
+
+
+    }
+
+
+
+
+
+
+
 }
