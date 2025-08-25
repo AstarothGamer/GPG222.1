@@ -1,11 +1,17 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Client : MonoBehaviour
 {
+    [SerializeField] GameObject connectingPanel;
     public delegate void ConnectedToServer();
     public ConnectedToServer ConnectedToServerEvent;
 
@@ -246,19 +252,49 @@ public class Client : MonoBehaviour
             if (boostsById.TryGetValue(boost.boostId, out var boostObj))
                 boostObj.Collect();
         }
+        else if (packet is GameStatePacket state)
+        {
+            if (state.CanJoin)
+            {
+                player.enabled = true;
+                GameObject.Find("LobbyPanel")?.SetActive(false);
+            }
+            TextMeshProUGUI playerCountText = GameObject.Find("PlayerCountText")?.GetComponent<TextMeshProUGUI>();
+            if (playerCountText != null && state.MaxPlayers > 0)
+            {
+                playerCountText.text = $"Players Joined: {state.NumberOfPlayers}/{state.MaxPlayers}";
+            }
+            TextMeshProUGUI statusText = GameObject.Find("StatusText")?.GetComponent<TextMeshProUGUI>();
+            if (statusText != null && state.Timer != 0f)
+            {
+                statusText.text = ((int)state.Timer).ToString();
+            }
+        }
     }
 
-    public void ConnectToServer(string ip, string playerName)
+    public async void ConnectToServer(string ip, string playerName)
     {
-        //ipAddress = ip;
-
-        ipAddress = string.IsNullOrWhiteSpace(ip) ? "127.0.0.1" : ip.Trim();
-
+        ipAddress = ip;
+        var cts = new CancellationTokenSource(5000);
+        connectingPanel?.SetActive(true);
+        StartCoroutine(WaitForConnectionEnd());
         try
         {
             client = new TcpClient();
             client.NoDelay = true;
-            client.Connect(ipAddress, serverPort);
+            var connectTask = client.ConnectAsync(ipAddress, serverPort);
+
+
+            var completedTask = await Task.WhenAny(connectTask, Task.Delay(5000, cts.Token));
+            if (completedTask != connectTask)
+            {
+                client.Close();
+                Debug.Log("Connection timed out.");
+                client.Close();
+                client = null;
+                return;
+            }
+            
             stream = client.GetStream();
 
             if (pd == null)
@@ -284,8 +320,45 @@ public class Client : MonoBehaviour
         {
             Debug.Log("Error connecting to server: " + e.Message);
         }
+        finally
+        {
+            StartCoroutine(EndOfConnectionAction());
+            cts.Dispose();
+        }
     }
+    private IEnumerator WaitForConnectionEnd()
+    {
+        var txt = connectingPanel.GetComponentInChildren<TextMeshProUGUI>();
+        
+        txt.text = "Connecting...";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting.";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting..";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting...";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting.";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting..";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting...";
+        yield return new WaitForSeconds(0.5f);
+        txt.text = "Connecting";
+    }
+    private IEnumerator EndOfConnectionAction()
+    {
+        var txt = connectingPanel.GetComponentInChildren<TextMeshProUGUI>();
+        txt.text = "Connection Timed out";
+        yield return new WaitForSeconds(1f);
+        txt.text = "Connecting...";
 
+        connectingPanel?.SetActive(false);
+    }
     public void RegisterFood(FoodController food)
     {
         if (!foodById.ContainsKey(food.foodID))
