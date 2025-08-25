@@ -20,6 +20,10 @@ public class Server : MonoBehaviour
     [SerializeField] private int foodCount = 40;
     [SerializeField] private int maxBoosts = 3;
     [SerializeField] private float mapSize = 10f;
+    [SerializeField] private int maxPlayers = 5;
+    
+    private float countdownToStart = 10f;
+    private bool gameStarted = false;
 
     private const int MaxPacketSize = 1 << 20;
 
@@ -58,6 +62,38 @@ public class Server : MonoBehaviour
         CleanupDisconnected();
     }
 
+    private void StartGame()
+    {
+        if ((clients.Count >= maxPlayers || countdownToStart <= 0f) && !gameStarted)
+        {
+            SendStartGame();
+        }
+
+        if (!gameStarted)
+        {
+            BroadcastToAllClients(new GameStatePacket {Timer = countdownToStart});
+            if (clients.Count >= 2)
+            {
+                countdownToStart -= Time.deltaTime;
+                if (countdownToStart <= 0f)
+                {
+                    SendStartGame();
+                }
+            }
+            else
+            {
+                countdownToStart = 10f;
+            }
+        }
+        BroadcastToAllClients(new GameStatePacket {NumberOfPlayers = clients.Count, MaxPlayers = maxPlayers} );
+    }
+
+    private void SendStartGame()
+    {
+        gameStarted = true;
+        Debug.Log("Game Started with " + clients.Count + " players.");
+        BroadcastToAllClients(new GameStatePacket { CanJoin = true });
+    }
     private void AcceptNewClients()
     {
         while (true)
@@ -75,6 +111,7 @@ public class Server : MonoBehaviour
 
                 using var ms = new MemoryStream();
                 using var bw = new BinaryWriter(ms);
+                
                 foreach (var food in foodList)
                 {
                     if (!food.isActive) continue;

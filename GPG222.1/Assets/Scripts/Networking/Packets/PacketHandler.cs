@@ -30,6 +30,7 @@ public static class PacketHandler
             3 => new SpeedBoostSpawnPacket(),
             4 => new BoostCollectedPacket(),
             5 => new PlayerKilledPacket(),
+            6 => new GameStatePacket(),
             _ => null
         };
 
