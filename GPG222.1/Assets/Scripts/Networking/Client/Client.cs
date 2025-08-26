@@ -272,6 +272,7 @@ public class Client : MonoBehaviour
         }
         else if (packet is GameStatePacket state)
         {
+            print("Hello World!!!");
             if (state.CanJoin)
             {
                 player.enabled = true;
@@ -294,12 +295,32 @@ public class Client : MonoBehaviour
         }
         
     }
-
+    public void AddChat()
+    {
+        if (chatInputField == null)
+        {
+            chatInputField = GameObject.Find("ChatInputField")?.GetComponent<TMP_InputField>();
+            if (chatInputField == null)
+            {
+                Debug.LogError("Chat input field not found in the scene");
+                return;
+            }
+        }
+        string message = chatInputField.text.Trim();
+        chatInputField.text = string.Empty;
+        if (string.IsNullOrEmpty(message))
+            return;
+        string shortID = pd.playerID.Length > 4 ? pd.playerID.Substring(pd.playerID.Length - 4) : pd.playerID;
+        string text = $"{pd.playerName}#{shortID}: {message}";
+        TextBoxManager.Instance.UpdateText(text);
+        packetQueue.Add(new TextPacket(text));
+    }
     public async void ConnectToServer(string ip, string playerName, Color color)
     {
         ipAddress = ip;
         pd.playerColor = color;
         var cts = new CancellationTokenSource(5000);
+        var flag = true;
         connectingPanel?.SetActive(true);
         StartCoroutine(WaitForConnectionEnd());
         try
@@ -316,6 +337,7 @@ public class Client : MonoBehaviour
                 Debug.Log("Connection timed out.");
                 client.Close();
                 client = null;
+                flag = false;
                 return;
             }
             
@@ -346,7 +368,8 @@ public class Client : MonoBehaviour
         }
         finally
         {
-            StartCoroutine(EndOfConnectionAction());
+            if (flag)
+                StartCoroutine(EndOfConnectionAction());
             cts.Dispose();
         }
     }
@@ -380,8 +403,14 @@ public class Client : MonoBehaviour
         txt.text = "Connection Timed out";
         yield return new WaitForSeconds(1f);
         txt.text = "Connecting...";
-
-        connectingPanel?.SetActive(false);
+        try
+        {
+            connectingPanel?.SetActive(false);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error disabling connecting panel: " + e.Message);
+        }
     }
     public void RegisterFood(FoodController food)
     {

@@ -5,55 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a2535342-c320-4755-a886-8b4ec995848e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/indexLayout.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/projectSettingsUpdater.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/Materials/Grid.mat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/Materials/Grid.mat.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/Materials/Player.mat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/Materials/Player.mat.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/gridtrans.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Materials/gridtrans.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/testScene.unity" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scenes/testScene.unity.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/GameStatePacket.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/GameStatePacket.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Server/RestartServer.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Server/RestartServer.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerName.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerName.cs.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/alex-productions-racing-sport-gaming-racing(chosic.com).mp3" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/alex-productions-racing-sport-gaming-racing(chosic.com).mp3.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/images.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/images.png.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/v882-kul-32-a.jpg" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Assets/v882-kul-32-a.jpg.meta" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ProjectSettings/ProjectSettings.asset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Prefabs/Player.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Prefabs/Player.prefab" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Resources/RemotePlayer.prefab" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Resources/RemotePlayer.prefab" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.GPG222.1/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Materials/URP_Universal.asset" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Materials/URP_Universal.asset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/GameScene.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scenes/MainMenu.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/MainMenu.unity" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scenes/Server.unity" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scenes/Server.unity" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Client/Client.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Client/Client.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/BoostCollectedPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/BoostCollectedPacket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/SpeedBoostController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/SpeedBoostController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/SpeedBoostSpawnPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/Ability/SpeedBoostSpawnPacket.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Client/MainMenuUI.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Client/MainMenuUI.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/BasePacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/BasePacket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/FoodEatenPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/FoodEatenPacket.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/FoodSpawnPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/FoodSpawnPacket.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PacketHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PacketHandler.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PlayerKilledPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PlayerKilledPacket.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PlayerTransformPacket.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Packets/PlayerTransformPacket.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/RemotePlayer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/RemotePlayer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Networking/Server/Server.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Networking/Server/Server.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/FoodController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/FoodController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Player/PlayerData.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/TagManager.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/EditorBuildSettings.asset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/Packages/com.unity.testtools.codecoverage/Settings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -66,16 +32,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Client/Client.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Client/Client.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/BasePacket.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/BasePacket.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/PacketHandler.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/PacketHandler.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/PlayerTransformPacket.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Packets/PlayerTransformPacket.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Server/Server.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Networking/Server/Server.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
-    <setting file="mock://D:/Unity/T4/GPG222.1/GPG222.1/Assets/Scripts/Player/PlayerController.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/Networking/Packets/GameStatePacket.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -89,7 +46,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Merging main&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;AlexMainGameL&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -156,8 +113,8 @@
       <workItem from="1754339319342" duration="437000" />
       <workItem from="1754341599935" duration="7943000" />
       <workItem from="1756116909862" duration="4775000" />
-      <workItem from="1756129765907" duration="2290000" />
-      <workItem from="1756132650993" duration="441000" />
+      <workItem from="1756129765333" duration="25000" />
+      <workItem from="1756218395717" duration="1516000" />
     </task>
     <servers />
   </component>

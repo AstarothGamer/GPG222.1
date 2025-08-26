@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using TMPro;
 using UnityEngine;
@@ -10,9 +11,21 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] Button connectButton;
     [SerializeField] TMP_InputField IPAddressField;
     [SerializeField] TMP_InputField NameField;
-    [SerializeField] TMP_InputField RColorField;
-    [SerializeField] TMP_InputField GColorField;
-    [SerializeField] TMP_InputField BColorField;
+    
+    [SerializeField] TMP_Dropdown myDropdown;
+    
+    List<Vector3Int> colorsFromDropDown = new List<Vector3Int>()
+    {
+        new Vector3Int(255, 0, 0), // Red
+        new Vector3Int(0, 255, 0), // Green
+        new Vector3Int(0, 0, 255), // Blue
+        new Vector3Int(255, 255, 0), // Yellow
+        new Vector3Int(255, 165, 0), // Orange
+        new Vector3Int(128, 0, 128), // Purple
+        new Vector3Int(0, 255, 255), // Cyan
+        new Vector3Int(255, 192, 203) // Pink
+    };
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,26 +54,23 @@ public class MainMenuUI : MonoBehaviour
             Debug.LogError("Name field is empty.");
             return;
         }
-        
-        if (!float.TryParse(RColorField.text, out float r) || !float.TryParse(GColorField.text, out float g) || !float.TryParse(BColorField.text, out float b))
+
+        // Get color from dropdown
+        if (myDropdown.value < 0 || myDropdown.value >= colorsFromDropDown.Count)
         {
-            Debug.LogError("Color fields must be numbers.");
+            Debug.LogError("Invalid color selection.");
             return;
         }
-        
-        if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255)
-        {
-            Debug.LogError("Color values must be between 0 and 255.");
-            return;
-        }
+        Vector3Int selectedColor = colorsFromDropDown[myDropdown.value];
+        float r = selectedColor.x;
+        float g = selectedColor.y;
+        float b = selectedColor.z;
 
         Client.Instance.ConnectToServer(IPAddressField.text, NameField.text, new Color(r / 255f, g / 255f, b / 255f, 1f));
         connectButton.interactable = false;
         IPAddressField.interactable = false;
         NameField.interactable = false;
-        RColorField.interactable = false;
-        GColorField.interactable = false;
-        BColorField.interactable = false;
+        myDropdown.interactable = false;
         Debug.Log($"Connecting to server at {IPAddressField.text}");
     }
 

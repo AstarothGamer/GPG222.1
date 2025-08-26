@@ -253,7 +253,7 @@ public class Server : MonoBehaviour
             case TextPacket textPacket:
                 { 
                     Debug.LogError("Received text: " + textPacket.message);
-                    BroadcastToAllClients(textPacket /*, new(){client}*/); // Remove reference to undefined 'client'
+                    BroadcastToAllClients(textPacket );
                     break;
                 }
             default:

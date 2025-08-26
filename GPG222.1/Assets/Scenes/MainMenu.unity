@@ -1931,6 +1931,7 @@ MonoBehaviour:
   connectButton: {fileID: 1040225998}
   IPAddressField: {fileID: 1796292331}
   NameField: {fileID: 1648825421}
+  myDropdown: {fileID: 495898545}
 --- !u!114 &1037406758
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2187,6 +2188,7 @@ MonoBehaviour:
   serverPort: 4000
   player: {fileID: 0}
   pd: {fileID: 1225058613}
+  chatInputField: {fileID: 0}
 --- !u!4 &1225058612
 Transform:
   m_ObjectHideFlags: 0
@@ -2216,6 +2218,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerID: 
   playerName: 
+  playerColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &1430120663
 GameObject:
   m_ObjectHideFlags: 0
