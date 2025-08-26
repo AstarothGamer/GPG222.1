@@ -29,31 +29,24 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
-        //pd = FindObjectOfType<PlayerData>();
-        //playerID = pd.playerID;
-        //playerName = pd.playerName;
-        //rb = GetComponent<Rigidbody>();
-        //speed = baseSpeed;
-
         rb = GetComponent<Rigidbody>();
+
+        pd = GetComponent<PlayerData>();
+        if (pd == null && Client.Instance != null)
+        {
+            pd = Client.Instance.pd;
+        }
+
+        if (pd != null)
+        {
+            GetComponent<Renderer>().material.color = pd.playerColor;
+        }
 
         speed = baseSpeed;
 
-        pd = GetComponent<PlayerData>();
-
-        if (pd == null && Client.Instance != null)
-        {
-
-            pd = Client.Instance.pd;
-
-        }
-
         rb.useGravity = false;
-
         rb.constraints = RigidbodyConstraints.FreezePositionZ | RigidbodyConstraints.FreezeRotation;
-
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-
         rb.interpolation = RigidbodyInterpolation.Interpolate;
 
        // blinkRenderers = GetBlinkRenderers();
@@ -98,11 +91,6 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(InvulnerabilityRoutine(invulnerabilityDuration));
 
     }
-
-
-
-
-
 
     private void Update()
     {
@@ -178,6 +166,8 @@ public class PlayerController : MonoBehaviour
             {
                 Client.Instance?.NotifyFoodEaten(food.foodID);
                 transform.localScale *= 1.01f;
+
+                // FoodCounter.Instance?.Increment();
 
                 FoodSound sound = other.GetComponent<FoodSound>();
                 if (sound != null) sound.Play();

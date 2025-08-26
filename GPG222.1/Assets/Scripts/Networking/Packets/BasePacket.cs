@@ -15,5 +15,6 @@ public enum PacketType
     SpeedBoostSpawn = 3,
     BoostCollected = 4,
     PlayerKilled = 5,
-    GameState = 6
+    GameState = 6,
+    Text = 7
 }

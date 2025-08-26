@@ -7,10 +7,11 @@ public class PlayerTransformPacket : BasePacket
     public string playerName;
     public Vector3 position;
     public float scale;
+    public float colorR, colorG, colorB, colorA;
 
     public PlayerTransformPacket() {}
 
-    public PlayerTransformPacket(string id, Transform t)
+    public PlayerTransformPacket(string id, Transform t, Color color)
     {
         playerId = id;
         playerName = Client.Instance.pd.playerName;
@@ -19,6 +20,11 @@ public class PlayerTransformPacket : BasePacket
             position = t.position;
             scale = t.localScale.x;
         }
+
+        colorR = color.r;
+        colorG = color.g;
+        colorB = color.b;
+        colorA = color.a;
     }
 
     public override PacketType Type => PacketType.PlayerTransform;
@@ -31,6 +37,11 @@ public class PlayerTransformPacket : BasePacket
         writer.Write(position.y);
         writer.Write(position.z);
         writer.Write(scale);
+        // Write color components
+        writer.Write(colorR);
+        writer.Write(colorG);
+        writer.Write(colorB);
+        writer.Write(colorA);
     }
 
     public override void Read(BinaryReader reader)
@@ -43,5 +54,9 @@ public class PlayerTransformPacket : BasePacket
             reader.ReadSingle()
         );
         scale = reader.ReadSingle();
+        colorR = reader.ReadSingle();
+        colorG = reader.ReadSingle();
+        colorB = reader.ReadSingle();
+        colorA = reader.ReadSingle();
     }
 }

@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
 using UnityEngine;
 using System.Collections;
-using Unity.VisualScripting;
 
 public class Server : MonoBehaviour
 {
@@ -101,6 +100,7 @@ public class Server : MonoBehaviour
         Debug.Log("Game Started with " + clients.Count + " players.");
         BroadcastToAllClients(new GameStatePacket { CanJoin = true });
     }
+
     private void AcceptNewClients()
     {
         while (true)
@@ -217,7 +217,6 @@ public class Server : MonoBehaviour
         }
     }
 
-
     private void HandleServerPacket(ClientState sender, BasePacket packet)
     {
         switch (packet)
@@ -249,6 +248,12 @@ public class Server : MonoBehaviour
                         sender.playerId = pt.playerId;
 
                     BroadcastToAllClients(packet, excludeId: pt.playerId);
+                    break;
+                }
+            case TextPacket textPacket:
+                { 
+                    Debug.LogError("Received text: " + textPacket.message);
+                    BroadcastToAllClients(textPacket );
                     break;
                 }
             default:
@@ -336,7 +341,6 @@ public class Server : MonoBehaviour
         food.position = randomPos;
         food.isActive = true;
         
-
         using var ms = new MemoryStream();
         using var bw = new BinaryWriter(ms);
 
@@ -363,7 +367,6 @@ public class BoostState
     public Vector2 position;
     public bool isActive;
 }
-
 
 public class ClientState
 {

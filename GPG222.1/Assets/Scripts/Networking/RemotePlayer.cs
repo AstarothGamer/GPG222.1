@@ -98,6 +98,15 @@ public class RemotePlayer : MonoBehaviour
 
     }
 
+    public void SetColor(Color color)
+    {
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = color;
+        }
+    }
+
     public void Die()
     {
         Destroy(gameObject);

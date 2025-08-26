@@ -1,13 +1,16 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using ChatSystem;
+using TMPro;
 using System.Threading;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class Client : MonoBehaviour
 {
@@ -32,6 +35,8 @@ public class Client : MonoBehaviour
     private string ipAddress;
     public PlayerController player;
     public PlayerData pd;
+    
+    public TMP_InputField chatInputField;
 
     private readonly Dictionary<string, RemotePlayer> otherPlayers = new();
     private readonly Dictionary<int, FoodController> foodById = new();
@@ -140,9 +145,10 @@ public class Client : MonoBehaviour
 
         if (client != null && client.Connected && player != null)
         {
+            packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform, pd.playerColor));
             if (Time.time - lastTransformSent >= SendRate)
             {
-                packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform));
+                packetQueue.Add(new PlayerTransformPacket(player.playerID, player.transform, pd.playerColor));
                 lastTransformSent = Time.time;
             }
         }
@@ -192,10 +198,10 @@ public class Client : MonoBehaviour
                     instance.name = pos.playerName;
                     otherPlayers[pos.playerId] = remote;
                 }
-
                 RemotePlayer remotePlayer = otherPlayers[pos.playerId];
                 remotePlayer.SetPosition(pos.position);
                 remotePlayer.SetScale(new Vector3(pos.scale, pos.scale, pos.scale));
+                remotePlayer.SetColor(new Color(pos.colorR, pos.colorG, pos.colorB, pos.colorA));
             }
         }
         else if (packet is PlayerKilledPacket dead)
@@ -228,13 +234,25 @@ public class Client : MonoBehaviour
                 foodById[spawn.foodId] = fsp;
             }
         }
+        else if (packet is TextPacket textPacket)
+        {
+            Debug.Log("Received text packet: " + textPacket.message);
+            TextBoxManager.Instance.UpdateText(textPacket.message);
+        }
+
+
         else if (packet is SpeedBoostSpawnPacket boostSpawn)
         {
+
             if (boostsById.ContainsKey(boostSpawn.boostId))
             {
+
                 var b = boostsById[boostSpawn.boostId];
+
                 b.transform.position = boostSpawn.position;
+
                 b.gameObject.SetActive(true);
+
             }
             else
             {
@@ -254,6 +272,7 @@ public class Client : MonoBehaviour
         }
         else if (packet is GameStatePacket state)
         {
+            print("Hello World!!!");
             if (state.CanJoin)
             {
                 player.enabled = true;
@@ -270,12 +289,38 @@ public class Client : MonoBehaviour
                 statusText.text = ((int)state.Timer).ToString();
             }
         }
+        else
+        {
+            Debug.LogWarning("Unknown packet type received: " + packet.GetType());
+        }
+        
     }
-
-    public async void ConnectToServer(string ip, string playerName)
+    public void AddChat()
+    {
+        if (chatInputField == null)
+        {
+            chatInputField = GameObject.Find("ChatInputField")?.GetComponent<TMP_InputField>();
+            if (chatInputField == null)
+            {
+                Debug.LogError("Chat input field not found in the scene");
+                return;
+            }
+        }
+        string message = chatInputField.text.Trim();
+        chatInputField.text = string.Empty;
+        if (string.IsNullOrEmpty(message))
+            return;
+        string shortID = pd.playerID.Length > 4 ? pd.playerID.Substring(pd.playerID.Length - 4) : pd.playerID;
+        string text = $"{pd.playerName}#{shortID}: {message}";
+        TextBoxManager.Instance.UpdateText(text);
+        packetQueue.Add(new TextPacket(text));
+    }
+    public async void ConnectToServer(string ip, string playerName, Color color)
     {
         ipAddress = ip;
+        pd.playerColor = color;
         var cts = new CancellationTokenSource(5000);
+        var flag = true;
         connectingPanel?.SetActive(true);
         StartCoroutine(WaitForConnectionEnd());
         try
@@ -292,6 +337,7 @@ public class Client : MonoBehaviour
                 Debug.Log("Connection timed out.");
                 client.Close();
                 client = null;
+                flag = false;
                 return;
             }
             
@@ -322,7 +368,8 @@ public class Client : MonoBehaviour
         }
         finally
         {
-            StartCoroutine(EndOfConnectionAction());
+            if (flag)
+                StartCoroutine(EndOfConnectionAction());
             cts.Dispose();
         }
     }
@@ -356,8 +403,14 @@ public class Client : MonoBehaviour
         txt.text = "Connection Timed out";
         yield return new WaitForSeconds(1f);
         txt.text = "Connecting...";
-
-        connectingPanel?.SetActive(false);
+        try
+        {
+            connectingPanel?.SetActive(false);
+        }
+        catch (Exception e)
+        {
+            Debug.LogError("Error disabling connecting panel: " + e.Message);
+        }
     }
     public void RegisterFood(FoodController food)
     {
@@ -399,8 +452,9 @@ public class Client : MonoBehaviour
             CleanupConnection();
             ClearClientState();
         }
-        catch
+        catch (Exception e)
         {
+            Debug.LogError("Error on disconection from server " + e.Message);
             CleanupConnection();
             ClearClientState();
         }

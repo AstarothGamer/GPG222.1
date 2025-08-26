@@ -8,8 +8,10 @@ public static class PacketHandler
     {
         using var ms = new MemoryStream();
         using var writer = new BinaryWriter(ms);
+
         writer.Write((int)packet.Type);
         packet.WriteTo(writer);
+
         return ms.ToArray();
     }
 
@@ -31,6 +33,7 @@ public static class PacketHandler
             4 => new BoostCollectedPacket(),
             5 => new PlayerKilledPacket(),
             6 => new GameStatePacket(),
+            7 => new TextPacket(),
             _ => null
         };
 
